@@ -154,7 +154,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 	defer r.C.ConcurrencyCnt.Dec() // jbzhou5 任务完成时-1
 	defer swg.Done()
 
-	seq := 0
+	seq := 1
 	seqNo := 1
 	for i, payload := range r.C.UpStreams {
 		for dataId := 1; dataId <= len(payload.DataList); dataId++ {
