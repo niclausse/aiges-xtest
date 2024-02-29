@@ -170,7 +170,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 			_ = req.Session(session)
 			dataIn := protocol.LoaderInput{}
 			dataIn.Headers["sid"] = reqSid
-			dataIn.SyncId = int32(dataId)
+			dataIn.SyncId = int32(seq)
 			upStatus := protocol.EngInputData_CONTINUE
 			if i == len(r.C.UpStreams)-1 && dataId == len(payload.DataList) {
 				upStatus = protocol.EngInputData_END
@@ -272,9 +272,10 @@ func (r *Request) FilesessAIOut(cli *xsfcli.Client, hdl string, sid string, rslt
 		req.SetParam("baseId", "0")
 		req.SetParam("version", "v2")
 		req.SetParam("waitTime", strconv.Itoa(r.C.TimeOut))
-		_ = req.Session(sid)
+		_ = req.Session(hdl)
 		dataIn := protocol.LoaderInput{}
-
+		dataIn.Headers = make(map[string]string)
+		dataIn.Headers["sid"] = sid
 		input, err := proto.Marshal(&dataIn)
 		if err != nil {
 			cli.Log.Errorw("sessAIOut marshal create request fail", "err", err.Error(), "params", dataIn.Params)
