@@ -130,7 +130,7 @@ func (r *Request) FilesessAIIn(cli *xsfcli.Client, indexs int64, thrRslt *[]prot
 	errChan := make(chan analy.ErrInfo, 1) // 仅保存首个错误码;
 	defer close(errChan)
 	var rwg sync.WaitGroup
-
+	rwg.Add(1)
 	go r.FilemultiUpStream(cli, &rwg, hdl, thrRslt, thrLock, errChan)
 
 	rwg.Wait() // 异步协程上行数据交互结束
@@ -152,6 +152,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 	// jbzhou5 并行网络协程监听
 	r.C.ConcurrencyCnt.Add(1)
 	defer r.C.ConcurrencyCnt.Dec() // jbzhou5 任务完成时-1
+	defer swg.Done()
 
 	for _, payload := range r.C.UpStreams {
 		for dataId := 1; dataId <= len(payload.DataList); dataId++ {
