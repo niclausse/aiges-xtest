@@ -131,7 +131,7 @@ func (r *Request) FilesessAIIn(cli *xsfcli.Client, indexs int64, thrRslt *[]prot
 	defer close(errChan)
 	var rwg sync.WaitGroup
 	rwg.Add(1)
-	go r.FilemultiUpStream(cli, &rwg, hdl, thrRslt, thrLock, errChan)
+	go r.FilemultiUpStream(cli, &rwg, hdl, reqSid, thrRslt, thrLock, errChan)
 
 	rwg.Wait() // 异步协程上行数据交互结束
 	select {
@@ -148,7 +148,7 @@ func (r *Request) FilesessAIIn(cli *xsfcli.Client, indexs int64, thrRslt *[]prot
 	return
 }
 
-func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, session string, pm *[]protocol.LoaderOutput, sm *sync.Mutex, errchan chan analy.ErrInfo) {
+func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, session, reqSid string, pm *[]protocol.LoaderOutput, sm *sync.Mutex, errchan chan analy.ErrInfo) {
 	// jbzhou5 并行网络协程监听
 	r.C.ConcurrencyCnt.Add(1)
 	defer r.C.ConcurrencyCnt.Dec() // jbzhou5 任务完成时-1
@@ -169,6 +169,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 			req.SetParam("waitTime", strconv.Itoa(r.C.TimeOut))
 			_ = req.Session(session)
 			dataIn := protocol.LoaderInput{}
+			dataIn.Headers["sid"] = reqSid
 			dataIn.SyncId = int32(dataId)
 			upStatus := protocol.EngInputData_CONTINUE
 			if i == len(r.C.UpStreams)-1 && dataId == len(payload.DataList) {
