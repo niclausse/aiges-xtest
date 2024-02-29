@@ -169,6 +169,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 			req.SetParam("waitTime", strconv.Itoa(r.C.TimeOut))
 			_ = req.Session(session)
 			dataIn := protocol.LoaderInput{}
+			dataIn.Headers = make(map[string]string)
 			dataIn.Headers["sid"] = reqSid
 			dataIn.SyncId = int32(seq)
 			upStatus := protocol.EngInputData_CONTINUE
