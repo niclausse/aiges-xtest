@@ -155,16 +155,12 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 	defer swg.Done()
 
 	seq := 0
-	seqNo := 1
 	for i, payload := range r.C.UpStreams {
 		for dataId := 1; dataId <= len(payload.DataList); dataId++ {
 			sendData := payload.DataList[dataId-1]
 			sTime := time.Now()
-			seq++
-			seqNo++
 
 			req := xsfcli.NewReq()
-			req.SetParam("SeqNo", strconv.Itoa(seqNo))
 			req.SetParam("baseId", "0")
 			req.SetParam("version", "v2")
 			req.SetParam("waitTime", strconv.Itoa(r.C.TimeOut))
@@ -185,6 +181,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 				Attribute: desc,
 			}
 			md.Attribute["seq"] = strconv.Itoa(seq)
+			seq++
 			md.Attribute["status"] = strconv.Itoa(int(upStatus))
 			inputmeta := protocol.Payload{Meta: &md, Data: sendData}
 			dataIn.Pl = append(dataIn.Pl, &inputmeta)
