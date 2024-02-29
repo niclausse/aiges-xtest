@@ -131,7 +131,7 @@ func (r *Request) FilesessAIIn(cli *xsfcli.Client, indexs int64, thrRslt *[]prot
 	defer close(errChan)
 	var rwg sync.WaitGroup
 
-	r.FilemultiUpStream(cli, &rwg, hdl, thrRslt, thrLock, errChan)
+	go r.FilemultiUpStream(cli, &rwg, hdl, thrRslt, thrLock, errChan)
 
 	rwg.Wait() // 异步协程上行数据交互结束
 	select {
