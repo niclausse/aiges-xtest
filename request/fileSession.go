@@ -263,8 +263,11 @@ func (r *Request) FilesessAIOut(cli *xsfcli.Client, hdl string, sid string, rslt
 	r.C.ConcurrencyCnt.Add(1)
 	defer r.C.ConcurrencyCnt.Dec() // jbzhou5 任务完成时-1
 	// loop read downstream result
+	seqNo := 0
 	for {
+		seqNo++
 		req := xsfcli.NewReq()
+		req.SetParam("SeqNo", strconv.Itoa(seqNo))
 		req.SetParam("baseId", "0")
 		req.SetParam("version", "v2")
 		req.SetParam("waitTime", strconv.Itoa(r.C.TimeOut))
