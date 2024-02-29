@@ -155,7 +155,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 	defer swg.Done()
 
 	seq := 0
-	for _, payload := range r.C.UpStreams {
+	for i, payload := range r.C.UpStreams {
 		for dataId := 1; dataId <= len(payload.DataList); dataId++ {
 			sendData := payload.DataList[dataId-1]
 			sTime := time.Now()
@@ -169,7 +169,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 			dataIn := protocol.LoaderInput{}
 			dataIn.SyncId = int32(dataId)
 			upStatus := protocol.EngInputData_CONTINUE
-			if dataId == len(payload.DataList) {
+			if i == len(r.C.UpStreams)-1 && dataId == len(payload.DataList) {
 				upStatus = protocol.EngInputData_END
 			}
 			desc := make(map[string]string)
