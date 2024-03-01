@@ -244,7 +244,7 @@ func (r *Request) FilemultiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, ses
 			}
 
 			// wait ms.动态调整校准上行数据实时率, 考虑其他接口耗时.
-			r.FilertCalibration(dataId, r.C.UpStreams[0].UpInterval, sTime)
+			r.FilertCalibration(seq, r.C.UpStreams[i].UpInterval, sTime)
 		}
 	}
 
