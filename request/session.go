@@ -3,6 +3,7 @@ package request
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	xsfcli "github.com/xfyun/xsf/client"
 	"strconv"
@@ -46,6 +47,7 @@ func (r *Request) SessionCall(cli *xsfcli.Client, index int64) (info analy.ErrIn
 	_ = r.sessAIExcp(cli, hdl, reqSid)
 	// 结果落盘
 	tmpMerge := make(map[int] /*streamId*/ *protocol.Payload)
+	fmt.Printf("length of thrRslt: %d\n", len(thrRslt))
 	for k, _ := range thrRslt {
 		for _, d := range thrRslt[k].Pl {
 			meta, exist := tmpMerge[k]
