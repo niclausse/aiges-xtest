@@ -3,7 +3,6 @@ package request
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	xsfcli "github.com/xfyun/xsf/client"
 	"strconv"
@@ -47,7 +46,7 @@ func (r *Request) SessionCall(cli *xsfcli.Client, index int64) (info analy.ErrIn
 	_ = r.sessAIExcp(cli, hdl, reqSid)
 	// 结果落盘
 	tmpMerge := make(map[int] /*streamId*/ *protocol.Payload)
-	fmt.Printf("length of thrRslt: %d\n", len(thrRslt))
+	cli.Log.Debugw("length of thrRslt", "length", len(thrRslt))
 	for k, _ := range thrRslt {
 		for _, d := range thrRslt[k].Pl {
 			meta, exist := tmpMerge[k]
@@ -139,6 +138,7 @@ func (r *Request) sessAIIn(cli *xsfcli.Client, indexs []int, thrRslt *[]protocol
 
 	// data stream: 相同UpInterval合并发送;
 	merge := make(map[int] /*UpInterval*/ map[int]int /*stream's index*/)
+	cli.Log.Debugw("indexes", "content of indexes", indexs)
 	for k, v := range indexs {
 		_, exist := merge[r.C.UpStreams[k].UpInterval]
 		if !exist {
@@ -296,6 +296,7 @@ func (r *Request) multiUpStream(cli *xsfcli.Client, swg *sync.WaitGroup, session
 		if len(dataOut.Pl) > 0 {
 			(*sm).Lock()
 			*pm = append(*pm, dataOut)
+			cli.Log.Debugw("pm length", "length of pm", len(*pm))
 			cli.Log.Debugw("multiUpStream get resp result", "hdl", session, "result", dataOut)
 			(*sm).Unlock()
 			analy.Perf.Record("", req.Handle(), analy.DataStatus(int(dataOut.Status)), analy.SessContinue, analy.DOWN, 0, "")
